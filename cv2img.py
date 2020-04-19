@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from skimage.filters import threshold_local
 
-def mains(imgin=None, imgout='Pic', show=[None], outformat=["HighContrastScan"]):
+def mains(imgin=None, imgout="Pic", show=[None], outformat=["HighContrastScan"]):
     '''
     A static library designed for easy image preprocessing. Simply feed in a some image and 
     get Grey, Blured Grey, Canny Edged, Contour Outlined, Scanned, Grey Scanned, High Contrast Scanned images.
@@ -19,6 +19,8 @@ def mains(imgin=None, imgout='Pic', show=[None], outformat=["HighContrastScan"])
     * options for show and outformat flags -> ["Original","Gray","GrayBlur","Edged","ContourOutlined","Scanned","GrayScan","HighContrastScan"]
     
     e.x.
+    python .\cv2img.py --imgin="certs/14.jpeg" --show=["Original","Gray","GrayBlur","Edged","ContourOutlined","Scanned","GrayScan","HighContrastScan"]
+    python .\cv2img.py --imgin="certs/14.jpeg" --imgout="NOT"
     '''
     # read the image
     try:
@@ -29,9 +31,9 @@ def mains(imgin=None, imgout='Pic', show=[None], outformat=["HighContrastScan"])
 #     image = cv2.imread("certs/20.png")
     orig = image.copy()
     if "Original" in show:
-        imageshow("CV2_Original", orig)
+        imageShow("CV2_Original", orig)
     if "Original" in outformat:
-        cv2.imwrite("CV2_" + imgout, image)
+        cv2.imwrite("CV2_" + imgout, orig)
     #---------------------------------------------------------
     # convert image to gray scale. This will remove any color noise
     # blur the image to remove high frequency noise 
@@ -42,15 +44,15 @@ def mains(imgin=None, imgout='Pic', show=[None], outformat=["HighContrastScan"])
     edgedImage = cv2.Canny(grayImageBlur, 100, 300, 3)
     # display image
     if "Gray" in show:
-        imageshow("Gray", grayImage)
+        imageShow("Gray", grayImage)
     if "Gray" in outformat:
         cv2.imwrite("Gray_" + imgout, grayImage)
     if "GrayBlur" in show:
-        imageshow("GrayBlur",grayImageBlur)
+        imageShow("GrayBlur",grayImageBlur)
     if "GrayBlur" in outformat:
         cv2.imwrite("GrayBlur_" + imgout,grayImageBlur)
     if "Edged" in show:
-        imageshow("Edged", grayImageBlur)
+        imageShow("Edged", grayImageBlur)
     if "Edged" in outformat:
         cv2.imwrite("Edged_" + imgout, grayImageBlur)
     #---------------------------------------------------------
@@ -66,7 +68,7 @@ def mains(imgin=None, imgout='Pic', show=[None], outformat=["HighContrastScan"])
     # display image
     cv2.drawContours(image, [ROIdimensions], -1, (0,255,0), 2)
     if "ContourOutlined" in show:
-        imageshow("ContourOutlined", orig)
+        imageShow("ContourOutlined", image)
     if "ContourOutlined" in outformat:
         cv2.imwrite("ContourOutlined_" + imgout,image)
     #---------------------------------------------------------
@@ -108,37 +110,34 @@ def mains(imgin=None, imgout='Pic', show=[None], outformat=["HighContrastScan"])
     scan = cv2.warpPerspective(orig, transformMatrix, (maxWidth, maxHeight))
     # Diaplay image
     if "Scanned" in show:
-        imageshow("Scanned", orig)
+        imageShow("Scanned", scan)
     if "Scanned" in outformat:
-        cv2.imwrite("Scanned_" + imgout, image)
+        cv2.imwrite("Scanned_" + imgout, scan)
     #---------------------------------------------------------
     # convert to gray
     scanGray = cv2.cvtColor(scan, cv2.COLOR_BGR2GRAY)
     # Display Image
     if "GrayScan" in show:
-        imageshow("GrayScan", orig)
+        imageShow("GrayScan", scanGray)
     if "GrayScan" in outformat:
-        cv2.imwrite("GrayScan_" + imgout,image)
+        cv2.imwrite("GrayScan_" + imgout,scanGray)
     #---------------------------------------------------------
     # increase contrast incase its document
     T = threshold_local(scanGray, 9, offset=8, method="gaussian")
     scanBW = (scanGray > T).astype("uint8") * 255
     # Display Image
     if "HighContrastScan" in show:
-        imageshow("HighContrastScan", orig)
+        imageShow("HighContrastScan", scanBM)
     if "HighContrastScan" in outformat:
-        cv2.imwrite("HighContrastScan_" + imgout, image)
+        cv2.imwrite("HighContrastScan_" + imgout, scanBW)
 
 def imageShow(title, image):
     while True:
-        cv2.imshow(title, image)
+        cv2.imshow(title + " - cv2 Window press ESC to exit", image)
         key = cv2.waitKey(200)
         if key in [27, 1048603]: # ESC key to abort, close window
             cv2.destroyAllWindows()
             break
-        else:
-            print("Enter ESC key to exit!")
-
     
 if __name__ == '__main__':
     fire.Fire(mains)
