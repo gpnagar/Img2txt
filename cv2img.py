@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from skimage.filters import threshold_local
 
-def mains(imgin=None, imgout="Pic", show=[None], outformat=["hcr"]):
+def mains(imgin=None, imgout="Pic", show=[None], outformat=["hcs"]):
     '''
     A static library designed for easy image preprocessing. Simply feed in a some image and 
     get Grey, Blured Grey, Canny Edged, Contour Outlined, Scanned, Grey Scanned, High Contrast Scanned images.
@@ -140,7 +140,7 @@ def mains(imgin=None, imgout="Pic", show=[None], outformat=["hcr"]):
     scanBW = (scanGray > T).astype("uint8") * 255
     # Display Image
     if "hcs" in show:
-        imageShow("HighContrastScan", scanBM)
+        imageShow("HighContrastScan", scanBW)
     if "hcs" in outformat:
         cv2.imwrite("HighContrastScan_" + imgout, scanBW)
     print("DONE!")
@@ -149,7 +149,7 @@ def imageShow(title, image):
     while True:
         cv2.imshow(title + " - cv2 - Press ESC to exit", image)
         key = cv2.waitKey(200)
-        if key in [27, 1048603]: # ESC key to abort, close window
+        if key in [27, 1048603]: # ESC key to abort and close window
             cv2.destroyAllWindows()
             break
     
