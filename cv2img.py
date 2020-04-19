@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from skimage.filters import threshold_local
 
-def mains(imgin=None, imgout="Pic", show=[None], outformat=["HighContrastScan"]):
+def mains(imgin=None, imgout="Pic", show=[None], outformat=["hcr"]):
     '''
     A static library designed for easy image preprocessing. Simply feed in a some image and 
     get Grey, Blured Grey, Canny Edged, Contour Outlined, Scanned, Grey Scanned, High Contrast Scanned images.
@@ -16,23 +16,32 @@ def mains(imgin=None, imgout="Pic", show=[None], outformat=["HighContrastScan"])
     --show="<Display_image_type>"       = Between the processing a lot formats are generated to view them specify them in a list
     --outformat="<export_image_type>"   = Between the processing a lot formats are generated to save them specify them in a list
     
-    * options for show and outformat flags -> ["Original","Gray","GrayBlur","Edged","ContourOutlined","Scanned","GrayScan","HighContrastScan"]
+    * options for show and outformat flags -> ["o","g","gb","e","co","s","gs","hcs"]
+    Options description -
+    o    - Original
+    g    - Gray
+    gb   - Gray Blur
+    e    - Canny Edged
+    co   - Contour Outlined
+    s    - Scanned
+    gs   - Gray Scan
+    hcs  - High Contrast Scan
     
     e.x.
-    python .\cv2img.py --imgin="certs/14.jpeg" --show=["Original","Gray","GrayBlur","Edged","ContourOutlined","Scanned","GrayScan","HighContrastScan"]
+    python .\cv2img.py --imgin="certs/14.jpeg" --show=["o","g","gb","e","co","s","gs","hcs"]
     python .\cv2img.py --imgin="certs/14.jpeg" --imgout="NOT"
     '''
     # read the image
     try:
         image = cv2.imread(imgin)
+        imgout = imgout + ".png"
+        orig = image.copy()
     except:
         print("IMAGE NOT FOUND OR INVALID FORMAT! Try absolute path or check if version is compatable or check if you have used the imgin flag properly!")
-    imgout+=".png"
-#     image = cv2.imread("certs/20.png")
-    orig = image.copy()
-    if "Original" in show:
+        return
+    if "o" in show:
         imageShow("CV2_Original", orig)
-    if "Original" in outformat:
+    if "o" in outformat:
         cv2.imwrite("CV2_" + imgout, orig)
     #---------------------------------------------------------
     # convert image to gray scale. This will remove any color noise
@@ -43,17 +52,17 @@ def mains(imgin=None, imgout="Pic", show=[None], outformat=["HighContrastScan"])
     # then we performed canny edge detection
     edgedImage = cv2.Canny(grayImageBlur, 100, 300, 3)
     # display image
-    if "Gray" in show:
+    if "g" in show:
         imageShow("Gray", grayImage)
-    if "Gray" in outformat:
+    if "g" in outformat:
         cv2.imwrite("Gray_" + imgout, grayImage)
-    if "GrayBlur" in show:
+    if "gb" in show:
         imageShow("GrayBlur",grayImageBlur)
-    if "GrayBlur" in outformat:
+    if "gb" in outformat:
         cv2.imwrite("GrayBlur_" + imgout,grayImageBlur)
-    if "Edged" in show:
+    if "e" in show:
         imageShow("Edged", grayImageBlur)
-    if "Edged" in outformat:
+    if "e" in outformat:
         cv2.imwrite("Edged_" + imgout, grayImageBlur)
     #---------------------------------------------------------
     # find the contours in the edged image, sort area wise 
@@ -67,13 +76,17 @@ def mains(imgin=None, imgout="Pic", show=[None], outformat=["HighContrastScan"])
     ROIdimensions = cv2.approxPolyDP(allContours[0], 0.02*perimeter, True)
     # display image
     cv2.drawContours(image, [ROIdimensions], -1, (0,255,0), 2)
-    if "ContourOutlined" in show:
+    if "co" in show:
         imageShow("ContourOutlined", image)
-    if "ContourOutlined" in outformat:
+    if "co" in outformat:
         cv2.imwrite("ContourOutlined_" + imgout,image)
     #---------------------------------------------------------
     # reshape coordinates array
-    ROIdimensions = ROIdimensions.reshape(4,2)
+    try:
+        ROIdimensions = ROIdimensions.reshape(4,2)
+    except:
+        print("ROI Dimensions reshape error, proabably too decorative document or too perfect or just document edges could not be found!")
+        return
     # list to hold ROI coordinates
     rect = np.zeros((4,2), dtype="float32")
     # top left corner will have the smallest sum, 
@@ -109,31 +122,32 @@ def mains(imgin=None, imgout="Pic", show=[None], outformat=["HighContrastScan"])
     # transform ROI
     scan = cv2.warpPerspective(orig, transformMatrix, (maxWidth, maxHeight))
     # Diaplay image
-    if "Scanned" in show:
+    if "s" in show:
         imageShow("Scanned", scan)
-    if "Scanned" in outformat:
+    if "s" in outformat:
         cv2.imwrite("Scanned_" + imgout, scan)
     #---------------------------------------------------------
     # convert to gray
     scanGray = cv2.cvtColor(scan, cv2.COLOR_BGR2GRAY)
     # Display Image
-    if "GrayScan" in show:
+    if "gs" in show:
         imageShow("GrayScan", scanGray)
-    if "GrayScan" in outformat:
+    if "gs" in outformat:
         cv2.imwrite("GrayScan_" + imgout,scanGray)
     #---------------------------------------------------------
     # increase contrast incase its document
     T = threshold_local(scanGray, 9, offset=8, method="gaussian")
     scanBW = (scanGray > T).astype("uint8") * 255
     # Display Image
-    if "HighContrastScan" in show:
+    if "hcs" in show:
         imageShow("HighContrastScan", scanBM)
-    if "HighContrastScan" in outformat:
+    if "hcs" in outformat:
         cv2.imwrite("HighContrastScan_" + imgout, scanBW)
+    print("DONE!")
 
 def imageShow(title, image):
     while True:
-        cv2.imshow(title + " - cv2 Window press ESC to exit", image)
+        cv2.imshow(title + " - cv2 - Press ESC to exit", image)
         key = cv2.waitKey(200)
         if key in [27, 1048603]: # ESC key to abort, close window
             cv2.destroyAllWindows()
