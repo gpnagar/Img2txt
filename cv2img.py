@@ -2,9 +2,10 @@ import imutils
 import fire
 import cv2
 import numpy as np
+from colorama import Fore
 from skimage.filters import threshold_local
 
-def mains(imgin=None, imgout="Pic", show=[None], outformat=["hcs"]):
+def mains(imgin=None, imgout="Pic", show=[None], outformat=["hcs"], more_help=False):
     '''
     A static library designed for easy image preprocessing. Simply feed in a some image and 
     get Grey, Blured Grey, Canny Edged, Contour Outlined, Scanned, Grey Scanned, High Contrast Scanned images.
@@ -13,31 +14,23 @@ def mains(imgin=None, imgout="Pic", show=[None], outformat=["hcs"]):
     Flags:
     --imgin="<input_image_path>"        = <REQUIRED> Input image path. works with formats supported by OpenCV
     --imgout="<output_image_name>"      = Output image name, if not specified default "BWOUT" will be used
-    --show="<Display_image_type>"       = Between the processing a lot formats are generated to view them specify them in a list
-    --outformat="<export_image_type>"   = Between the processing a lot formats are generated to save them specify them in a list
-    
-    * options for show and outformat flags -> ["o","g","gb","e","co","s","gs","hcs"]
-    Options description -
-    o    - Original
-    g    - Gray
-    gb   - Gray Blur
-    e    - Canny Edged
-    co   - Contour Outlined
-    s    - Scanned
-    gs   - Gray Scan
-    hcs  - High Contrast Scan
     
     e.x.
-    python .\cv2img.py --imgin="certs/14.jpeg" --show=["o","g","gs","hcs"]
+    python .\cv2img.py --imgin="certs/14.jpeg"
     python .\cv2img.py --imgin="certs/14.jpeg" --imgout="NOT"
+    
+    use --more_help=True  for more advanced features of this little script!
     '''
+    if more_help:
+        help_ex()
+        return
     # read the image
     try:
         image = cv2.imread(imgin)
         imgout = imgout + ".png"
         orig = image.copy()
     except:
-        print("IMAGE NOT FOUND OR INVALID FORMAT! Try absolute path or check if version is compatable or check if you have used the imgin flag properly!")
+        print(Fore.RED + "IMAGE NOT FOUND OR INVALID FORMAT! use --help for more information")
         return
     if "o" in show:
         imageShow("CV2_Original", orig)
@@ -85,7 +78,7 @@ def mains(imgin=None, imgout="Pic", show=[None], outformat=["hcs"]):
     try:
         ROIdimensions = ROIdimensions.reshape(4,2)
     except:
-        print("ROI Dimensions reshape error, proabably too decorative document or too perfect or just document edges could not be found!")
+        print(Fore.RED + "ROI Dimensions reshape error, proabably too decorative document or too perfect or just document edges could not be found!")
         return
     # list to hold ROI coordinates
     rect = np.zeros((4,2), dtype="float32")
@@ -152,6 +145,34 @@ def imageShow(title, image):
         if key in [27, 1048603]: # ESC key to abort and close window
             cv2.destroyAllWindows()
             break
+def help_ex():
+    print('''
+    Description:
+    A static library designed for easy image preprocessing. Simply feed in a some image and 
+    get Grey, Blured Grey, Canny Edged, Contour Outlined, Scanned, Grey Scanned, High Contrast Scanned images.
+    Credits -> https://towardsdatascience.com/document-scanner-using-computer-vision-opencv-and-python-20b87b1cbb06
+    
+    Flags:
+    --imgin="<input_image_path>"        = <REQUIRED> Input image path. works with formats supported by OpenCV
+    --imgout="<output_image_name>"      = Output image name, if not specified default "BWOUT" will be used
+    --show="<Display_image_type>"       = Between the processing a lot formats are generated to view them specify them in a list
+    --outformat="<export_image_type>"   = Between the processing a lot formats are generated to save them specify them in a list
+    
+    * options for show and outformat flags -> ["o","g","gb","e","co","s","gs","hcs"]
+    Options description -
+    o    - Original
+    g    - Gray
+    gb   - Gray Blur
+    e    - Canny Edged
+    co   - Contour Outlined
+    s    - Scanned
+    gs   - Gray Scan
+    hcs  - High Contrast Scan
+    
+    e.x.
+    python .\cv2img.py --imgin="certs/14.jpeg" --show=["o","g","hcs"]
+    python .\cv2img.py --imgin="certs/14.jpeg" --imgout="NOT"
+          ''')
     
 if __name__ == '__main__':
     fire.Fire(mains)
