@@ -28,7 +28,7 @@ def mains(imgin=None, imgout="Pic", show=[None], outformat=["hcs"]):
     hcs  - High Contrast Scan
     
     e.x.
-    python .\cv2img.py --imgin="certs/14.jpeg" --show=["o","g","gb","e","co","s","gs","hcs"]
+    python .\cv2img.py --imgin="certs/14.jpeg" --show=["o","g","gs","hcs"]
     python .\cv2img.py --imgin="certs/14.jpeg" --imgout="NOT"
     '''
     # read the image
