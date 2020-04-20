@@ -1,7 +1,6 @@
-import os, sys, requests, time, fire
+import os, requests, time, fire
 from PIL import Image
 from io import BytesIO
-import os
 from colorama import Fore
 
 def mains(img_path="NaN", endpoint=None, key=None, cred_path=None, save_cred=None, txtout=None):
