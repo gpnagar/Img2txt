@@ -1,5 +1,4 @@
 import os, requests, time, fire
-from PIL import Image
 from io import BytesIO
 from colorama import Fore
 
