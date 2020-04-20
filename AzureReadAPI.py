@@ -27,7 +27,8 @@ def mains(img_path="NaN", endpoint=None, key=None, cred_path=None, save_cred=Non
     --save_text  = Path to save the text file if not specified just return the text
     
     e.x.
-    
+    python .\AzureReadAPI.py --img_path="ImageDocument.jpeg" --endpoint="https://westcentralus.api.cognitive.microsoft.com" --key="1234567890qwertyuiopaassddd" --txtout=True --save_cred=True
+    python .\AzureReadAPI.py --img_path="ImageDocument.jpeg"
     '''
     ##################### MY PERSONAL KEYS FOR TEST
 #     endpoint="https://westcentralus.api.cognitive.microsoft.com"
